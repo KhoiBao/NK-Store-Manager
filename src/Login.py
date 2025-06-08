@@ -6,12 +6,12 @@ import re
 import random
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from send_otp_gmail import OTPManager
+from models.send_otp_gmail import OTPManager
 import bcrypt
 from utils.user_manager import UserManager
-from frames.product_frame import ProductFrame 
-from San_Pham.PM import ProductManager
-from frames.product_frame import ProductFrame
+from src.PM import ProductManager
+from src.product_frame import ProductFrame 
+from src.product_frame import ProductFrame
 
 class NKManagerApp:
     def __init__(self, root, login_frame, show_sign_in_callback):
