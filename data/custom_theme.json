@@ -1,0 +1,26 @@
+{
+  "CTk": {
+    "fg_color": "#242424",
+    "text_color": "#DCE4EE"
+  },
+  "CTkButton": {
+    "fg_color": "#3B8ED0",
+    "text_color": "#DCE4EE",
+    "hover_color": "#36719F",
+    "corner_radius": 8
+  },
+  "CTkEntry": {
+    "fg_color": "#3B8ED0",
+    "text_color": "#DCE4EE",
+    "placeholder_text_color": "#ADB2AD",
+    "border_color": "#3B8ED0",
+    "corner_radius": 8
+  },
+  "CTkFrame": {
+    "fg_color": "#2E2E2E",
+    "border_color": "#565B5E"
+  },
+  "CTkLabel": {
+    "text_color": "#DCE4EE"
+  }
+}
