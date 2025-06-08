@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
-from San_Pham.PM import ProductManager
-from San_Pham.products import Product
+from src.PM import ProductManager
+from models.products import Product
 
 
 class ProductFrame(ctk.CTkFrame):

@@ -1,6 +1,6 @@
 import json
 import os
-from San_Pham.products import Product
+from models.products import Product
 
 
 class ProductManager:
