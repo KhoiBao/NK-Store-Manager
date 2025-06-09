@@ -3,12 +3,12 @@
         "username": "user1a",
         "password": "Nguyen@123",
         "email": "nguyenvanb6523@gmail.com",
-        "store_code": "STORE123"
+        "role": "user"
     },
     {
-        "username": "user123",
-        "email": "nguyenvana2301@gmail.com",
-        "password": "$2b$12$.GfSrD2wJFkuBOQ6cpaq2uC1H4jQo69PKsLyJecdEK7ifwNUg/Js.",
-        "store_code": "STORE123"
+        "username": "test123",
+        "email": "brownhunte123456789@gmail.com",
+        "password": "$2b$12$iEhBYVkhdY18YsGF2uP61ObyYTsI1pUltPHleLvmuhewzPu8.Mzuq",
+        "role": "user"
     }
 ]

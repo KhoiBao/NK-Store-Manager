@@ -1,4 +1,4 @@
-from models.send_otp_gmail import OTPManager as GmailSender
+from src.models.send_otp_gmail import OTPManager as GmailSender
 
 class OTPManager:
     def __init__(self):

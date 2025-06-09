@@ -6,15 +6,15 @@ import re
 import random
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from models.send_otp_gmail import OTPManager
+from src.models.send_otp_gmail import OTPManager
 import bcrypt
-from utils.user_manager import UserManager
-from src.PM import ProductManager
-from src.product_frame import ProductFrame 
-from src.product_frame import ProductFrame
+from src.utils.user_manager import UserManager
+from src.service.PM import ProductManager
+from src.view.product_frame import ProductFrame 
+from src.view.product_frame import ProductFrame
 
 class NKManagerApp:
-    def __init__(self, root, login_frame, show_sign_in_callback):
+    def __init__(self, user_manager, product_manager, otp_manager):
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
 
@@ -37,13 +37,12 @@ class NKManagerApp:
         self.user_data_temp = None
         self.user_data_for_otp = None
 
+        self.user_manager = user_manager
+        self.product_manager = product_manager
+        self.otp_manager = otp_manager
+
         self.setup_ui()
         self.show_sign_in()
-        self.root.mainloop()
-
-        self.root = root
-        self.login_frame = login_frame
-        self.show_sign_in = show_sign_in_callback
 
         self.otp_code = None
         self.otp_expired = False
@@ -53,28 +52,28 @@ class NKManagerApp:
         self.build_forgot_password_frame()
         self.build_otp_frame()
         self.build_update_account_frame()
-
+        self.full_frame = ctk.CTkFrame(self.root, fg_color="transparent")
     def setup_ui(self):
         self.left_frame = ctk.CTkFrame(self.root, fg_color="transparent")
         self.left_frame.pack(side="left", fill="both", expand=True)
 
-        self.right_frame = ctk.CTkFrame(self.root, fg_color="#1e2b3a")
-        self.right_frame.pack(side="right", fill="y")
+        self.right_frame = ctk.CTkFrame(self.root, fg_color="#27486E")
+        self.right_frame.pack(side="right", fill="both", expand=False)
 
-        self.full_frame = ctk.CTkFrame(self.root, fg_color="#1e2b3a")
-        self.full_frame.pack_forget()
-
-        try:
-            bg_image = Image.open("Picture NK Manager.png")
+        # Đặt ảnh vào left_frame
+        image_path = os.path.join(self.BASE_DIR, "..", "..", "assets", "Picture NK Manager.png")
+        if os.path.exists(image_path):
+            bg_image = Image.open(image_path)
             image_ratio = bg_image.width / bg_image.height
-            resized_height = int(self.root.winfo_screenheight() * 1.8)
-            resized_width = int(resized_height * image_ratio)
-            bg_image = bg_image.resize((resized_width, resized_height), Image.Resampling.LANCZOS)
-            bg_photo = ImageTk.PhotoImage(bg_image)
-            bg_label = ctk.CTkLabel(self.left_frame, image=bg_photo, text="")
-            bg_label.image = bg_photo
-            bg_label.place(relx=0.5, rely=0.5, anchor="center")
-        except:
+            frame_height = int(self.root.winfo_screenheight() * 1.5)
+            frame_width = int(frame_height * image_ratio)
+            bg_image = bg_image.resize((frame_width, frame_height), Image.Resampling.LANCZOS)
+            self.bg_photo = ImageTk.PhotoImage(bg_image)
+
+            bg_label = ctk.CTkLabel(self.left_frame, image=self.bg_photo, text="")
+            bg_label.pack(side="left",fill="both",expand = True)
+        else:
+            print("Không tìm thấy ảnh.")
             self.left_frame.configure(fg_color="#2c3e50")
 
         self.login_frame = ctk.CTkFrame(self.right_frame, fg_color="transparent")
@@ -163,11 +162,10 @@ class NKManagerApp:
 # ============================= Đăng ký tài khoản ==============================
 #===============================================================================
 
-# ==== 1. Kiểm tra hợp lệ tên tài khoản, email, mật khẩu, mã cửa hàng ====
-    def validate_user_input(self, username, email, password, confirm_pw, store_code):
+# ==== 1. Kiểm tra hợp lệ tên tài khoản, email, mật khẩu ====
+    def validate_user_input(self, username, email, password, confirm_pw):
         email = str(email).strip()
         username = str(username).strip()
-        store_code = str(store_code).strip()
 
         if not username:
             return "Vui lòng nhập tên tài khoản."
@@ -189,16 +187,12 @@ class NKManagerApp:
         if password != confirm_pw:
             return "Mật khẩu nhập lại không khớp."
 
-        if not store_code:
-            return "Vui lòng nhập mã cửa hàng."
-        if not self.store_code_exists(store_code):
-            return "Mã cửa hàng không tồn tại."
 
         self.temp_user_data = {
         "username": username,
         "email": email,
         "password": password,
-        "store_code": store_code
+        "role":"user"
         }
 
         # Gửi OTP và chuyển sang giao diện OTP
@@ -229,18 +223,6 @@ class NKManagerApp:
                             return True
                     except json.JSONDecodeError:
                         continue
-        return False
-
-    # ==== 4. Kiểm tra mã cửa hàng có tồn tại trong admin.json không ====
-    def store_code_exists(self, store_code):
-        path = os.path.join(self.JSON_DIR, "admin.json")
-        if os.path.exists(path):
-            with open(path, 'r', encoding='utf-8') as f:
-                try:
-                    data = json.load(f)
-                    return any(admin.get("store_code") == store_code for admin in data)
-                except json.JSONDecodeError:
-                    return False
         return False
 
     # ==== 5. Tạo mã OTP ngẫu nhiên ====
@@ -340,10 +322,10 @@ class NKManagerApp:
         def toggle_password_():
             if self.entry_confirm_password_.cget("show") == "":
                 self.entry_confirm_password_.configure(show="*")
-                self.toggle_button_.configure(text="👁")
+                self.toggle_button_.configure(text="Hiện")
             else:
                 self.entry_confirm_password_.configure(show="")
-                self.toggle_button_.configure(text="🙈")
+                self.toggle_button_.configure(text="Ẩn")
 
         self.toggle_button_ = ctk.CTkButton(
             self.confirm_frame,
@@ -354,12 +336,6 @@ class NKManagerApp:
             hover_color="#34495e"
         )
         self.toggle_button_.pack(side="left", padx=5)  
-
-        # Mã cửa hàng
-        ctk.CTkLabel(self.sign_up_frame, text="Mã cửa hàng (*)", text_color="white", anchor="w").pack(anchor="w", padx=0)
-        self.entry_store_code = ctk.CTkEntry(self.sign_up_frame, placeholder_text="Nhập mã cửa hàng", width=300)
-        self.entry_store_code.pack(pady=10)
-
         # Nút tiếp theo
         next_button_sign_up = ctk.CTkButton(self.sign_up_frame, text="Tiếp theo", width=300, fg_color="#1abc9c", hover_color="#1634a0", command=self.handle_signup_next)
         next_button_sign_up.pack(pady=20)
@@ -376,9 +352,7 @@ class NKManagerApp:
         self.entry_username.bind("<Return>", lambda e: self.entry_email_signup.focus())
         self.entry_email_signup.bind("<Return>", lambda e: self.entry_password_sign_up.focus())
         self.entry_password_sign_up.bind("<Return>", lambda e: self.entry_confirm_password_.focus())
-        self.entry_confirm_password_.bind("<Return>", lambda e: self.entry_store_code.focus())
-        self.entry_store_code.bind("<Return>", lambda e: self.handle_signup_next())
-
+        self.entry_confirm_password_.bind("<Return>")
 
     # ==== Gửi OTP sau đăng ký ====
     def send_signup_otp(self):
@@ -411,13 +385,23 @@ class NKManagerApp:
 
     # ==== Lưu user sau OTP thành công ====
     def save_signup_user(self):
+        # Đường dẫn đến file user.json
         path = os.path.join(self.JSON_DIR, "user.json")
         user_list = []
+
+        # Đảm bảo self.temp_user_data tồn tại
+        if not self.temp_user_data:
+            print("Không có dữ liệu tạm để lưu.")
+            return "Đăng ký thất bại!"
+
+        # Băm mật khẩu
         hashed_pw = bcrypt.hashpw(
             self.temp_user_data["password"].encode("utf-8"),
             bcrypt.gensalt()
         ).decode("utf-8")
         self.temp_user_data["password"] = hashed_pw
+
+        self.temp_user_data["role"] = "user"
 
         # Đọc dữ liệu cũ
         if os.path.exists(path):
@@ -427,13 +411,15 @@ class NKManagerApp:
                 except json.JSONDecodeError:
                     user_list = []
 
-        # Ghi dữ liệu mới
+        # Ghi thêm người dùng mới
         user_list.append(self.temp_user_data)
+
         with open(path, "w", encoding="utf-8") as f:
             json.dump(user_list, f, indent=4, ensure_ascii=False)
 
-        print("✅ Đăng ký thành công và đã lưu vào user.json!")
+        print("Đăng ký thành công và đã lưu vào user.json!")
         return "Đăng ký thành công!"
+
 
     def handle_signup_next(self):
         result = self.validate_user_input(
@@ -441,24 +427,10 @@ class NKManagerApp:
             self.entry_email_signup.get(),
             self.entry_password_sign_up.get(),
             self.entry_confirm_password_.get(),
-            self.entry_store_code.get()
         )
         print("Signup next result:", result)
         if result != "OK":
             messagebox.showwarning("Cảnh báo", result)
-
-
-    def build_forgot_password_frame(self):
-        # ... Cài đặt giao diện quên mật khẩu (OOP hóa)
-        pass
-
-    def build_otp_frame(self):
-        # ... Cài đặt giao diện OTP (OOP hóa)
-        pass
-
-    def build_update_account_frame(self):
-        # ... Cài đặt giao diện đổi mật khẩu / tài khoản (OOP hóa)
-        pass
 
     def show_sign_in(self):
         #self.hide_all_frames()
@@ -724,7 +696,7 @@ class NKManagerApp:
 
     def verify_login(self, username, password):
         self.BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        self.JSON_DIR = os.path.join(self.BASE_DIR, "JSON")
+        self.JSON_DIR = os.path.join(self.BASE_DIR,"..","..","data")
 
         # Kiểm tra các file người dùng và admin
         for file in ["admin.json", "user.json"]:
@@ -759,6 +731,14 @@ class NKManagerApp:
         return None
     
     def show_admin_page(self):
+        username = self.entry_username_sign_in.get()
+        ctk.CTkLabel(
+            self.full_frame,
+            text=f"Xin chào, {username}!",
+            font=("Segoe UI", 20, "bold"),
+            text_color="#1abc9c"
+        ).pack(pady=(10, 0))
+
         self.left_frame.pack_forget()
         self.right_frame.pack_forget()
         
@@ -766,12 +746,12 @@ class NKManagerApp:
         for widget in self.full_frame.winfo_children():
             widget.destroy()
 
-        product_ui = ProductFrame(self.full_frame, controller=None, role="admin")
+        product_ui = ProductFrame(self.full_frame, controller=self, role="admin")
         product_ui.pack(fill="both", expand=True)
 
         logout_button = ctk.CTkButton(
                 self.full_frame,
-                text="🚪 Đăng xuất",
+                text="Đăng xuất",
                 command=self.logout_action,
                 fg_color="red",     
                 text_color="white"
@@ -779,6 +759,13 @@ class NKManagerApp:
         logout_button.pack(pady=20)
 
     def show_user_page(self):
+        username = self.entry_username_sign_in.get()
+        ctk.CTkLabel(
+            self.full_frame,
+            text=f"Xin chào, {username}!",
+            font=("Segoe UI", 20, "bold"),
+            text_color="#1abc9c"
+        ).pack(pady=(10, 0))
         self.left_frame.pack_forget()
         self.right_frame.pack_forget()
 
@@ -786,12 +773,12 @@ class NKManagerApp:
         for widget in self.full_frame.winfo_children():
             widget.destroy()
 
-        product_ui = ProductFrame(self.full_frame, controller=None, role="user")
+        product_ui = ProductFrame(self.full_frame, controller=self, role="user")
         product_ui.pack(fill="both", expand=True)
 
         logout_button = ctk.CTkButton(
             self.full_frame,
-            text="🚪 Đăng xuất",
+            text="Đăng xuất",
             command=self.logout_action,
             fg_color="red",     
             text_color="white"

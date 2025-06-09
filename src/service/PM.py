@@ -1,11 +1,11 @@
-import json
 import os
-from models.products import Product
-
+import json
+from src.models.products import Product
 
 class ProductManager:
-    def __init__(self, filepath = "products.json"):
-        self.filepath = filepath
+    def __init__(self):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.filepath = os.path.abspath(os.path.join(base_dir, "..", "..", "data", "products.json"))
         self.products = []
         self.load()
 
@@ -14,7 +14,7 @@ class ProductManager:
             with open(self.filepath, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 self.products = [Product(**item) for item in data]
-        except FileNotFoundError:
+        except:
             self.products = []
 
     def save(self):

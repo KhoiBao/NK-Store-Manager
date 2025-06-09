@@ -3,7 +3,7 @@ import json
 
 class AuthManager:
     def __init__(self):
-        self.base_dir = os.path.join(os.path.dirname(__file__), '..', 'JSON')
+        self.base_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
 
     def verify_login(self, username, password):
         for file_name in ["admin.json", "user.json"]:

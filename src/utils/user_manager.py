@@ -4,7 +4,8 @@ import random
 
 class UserManager:
     def __init__(self):
-        self.base_dir = os.path.join(os.path.dirname(__file__), '..', 'JSON')
+        self.base_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'data')
+
 
     def generate_store_code(self):
         return "STORE-" + ''.join(random.choices('0123456789', k=6))

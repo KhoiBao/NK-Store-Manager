@@ -1,7 +1,8 @@
 import customtkinter as ctk
+import json
 from tkinter import messagebox
-from src.PM import ProductManager
-from models.products import Product
+from src.service.PM import ProductManager
+from src.models.products import Product
 
 
 class ProductFrame(ctk.CTkFrame):
@@ -10,7 +11,7 @@ class ProductFrame(ctk.CTkFrame):
         self.controller = controller
         self.role = role
 
-        self.product_manager = ProductManager("San_Pham/products.json")
+        self.product_manager = controller.product_manager
 
         self.build_ui()
         self.load_products()
@@ -60,10 +61,10 @@ class ProductFrame(ctk.CTkFrame):
             desc_label.grid(row=1, column=0, columnspan=4, sticky="w")
 
             if self.role == "admin":
-                edit_btn = ctk.CTkButton(item, text="✏ Sửa", command=lambda i=idx: self.edit_product(i))
+                edit_btn = ctk.CTkButton(item, text="Sửa", command=lambda i=idx: self.edit_product(i))
                 edit_btn.grid(row=0, column=2, padx=5)
 
-                delete_btn = ctk.CTkButton(item, text="❌ Xoá", fg_color="red", command=lambda i=idx: self.delete_product(i))
+                delete_btn = ctk.CTkButton(item, text="Xoá", fg_color="red", command=lambda i=idx: self.delete_product(i))
                 delete_btn.grid(row=0, column=3, padx=5)
 
 
