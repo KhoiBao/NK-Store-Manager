@@ -37,3 +37,11 @@ class ProductManager:
         if 0 <= index < len(self.products):
             del self.products[index]
             self.save()
+            
+    def get_next_id(self):
+        products = self.list()
+        if not products:
+            return 1
+        max_id = max([int(getattr(p, "id", 0)) for p in products])
+        return max_id + 1
+

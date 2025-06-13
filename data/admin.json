@@ -1,9 +1,12 @@
 [
     {
+      "fullname": "Nguyễn Trọng Nguyên",
       "username": "adminNK",
       "password": "admin@2025",
       "email": "russianmyfavorite2023@gmail.com",
-      "role":"admin"
+      "store_code": "STORE123",
+      "store_name": "NKStore",
+      "role": "admin"
     }
 ]
   
