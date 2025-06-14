@@ -187,5 +187,23 @@
     "description": "Classic Created Wedding Engagement Solitaire Diamond Promise Ring for Her. Gifts to spoil your love more for Engagement, Wedding, Anniversary, Valentine's Day...",
     "soluong": 1,
     "image": "7.jpg"
+  },
+  {
+    "id": 22,
+    "name": "AAAAA",
+    "price": 99.0,
+    "category": "KEKEKE",
+    "description": "KKKK",
+    "soluong": 23,
+    "image": null
+  },
+  {
+    "id": 23,
+    "name": "Cá",
+    "price": 100.0,
+    "category": "Chưa phân loại",
+    "description": "",
+    "soluong": 1,
+    "image": null
   }
 ]

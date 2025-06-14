@@ -230,7 +230,8 @@ class NKManagerApp:
         return False
      # ==== 4. Kiểm tra mã cửa hàng có tồn tại trong admin.json không ====
     def store_code_exists(self, store_code):
-        path = os.path.join(self.JSON_DIR, "admin.json")
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(base_dir, "..", "..", "data", "admin.json")
         if os.path.exists(path):
             with open(path, 'r', encoding='utf-8') as f:
                 try:
@@ -256,7 +257,9 @@ class NKManagerApp:
         if not self.temp_user_data:
             return "Không có dữ liệu để lưu."
 
-        path = os.path.join(self.JSON_DIR, "user.json")
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(base_dir, "..", "..", "data", "user.json")
+
         user_list = []
 
         # Đọc dữ liệu cũ
@@ -387,6 +390,10 @@ class NKManagerApp:
         try:
             otp_manager = OTPManager()
             email = self.temp_user_data.get("email")
+            if not email:
+                print("Email rỗng!")
+                return False
+            
             validated_email = otp_manager.validate_email(email)
             self.otp_code = otp_manager.send_otp(validated_email)
             self.otp_expired = False
@@ -413,7 +420,8 @@ class NKManagerApp:
     # ==== Lưu user sau OTP thành công ====
     def save_signup_user(self):
         # Đường dẫn đến file user.json
-        path = os.path.join(self.JSON_DIR, "user.json")
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(base_dir, "..", "..", "data", "user.json")
         user_list = []
 
         # Đảm bảo self.temp_user_data tồn tại
